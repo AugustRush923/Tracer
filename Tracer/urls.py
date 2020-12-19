@@ -16,6 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from sms_test import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('send/sms', views.send_sms),
+    path('register', views.register),
+    path('register/code', views.get_code),
+    path('register/handler', views.register_handler),
 ]

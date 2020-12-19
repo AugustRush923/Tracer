@@ -22,3 +22,9 @@
 .navbar-default {
     border-radius: 0;
 }
+
+.err-msg {
+    color: red;
+    position: absolute;
+    font-size: 12px;
+}

@@ -18,6 +18,7 @@
                         <div class="clearfix">
                             <div class="col-md-6" style="padding: 0;">
                                 {{ fields }}
+                                <span class="err-msg"></span>
                             </div>
                             <div class="col-md-6">
                                 <button type="button" class="btn btn-default" id="btnSms">获取验证码</button>
@@ -29,6 +30,7 @@
                     <div class="form-group">
                         <label for="{{ fields.id_for_label }}">{{ fields.label }}</label>
                         {{ fields }}
+                        <span class="err-msg"></span>
                     </div>
                 {% endif %}
 

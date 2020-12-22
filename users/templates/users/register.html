@@ -7,7 +7,7 @@
 {% block contentBlock %}
     <div class="account">
         <div class="title">用户注册</div>
-        <form action="/register/handler" method="post">
+        <form method="post">
             {% csrf_token %}
             {% for fields in form %}
                 {% if fields.name == 'code' %}

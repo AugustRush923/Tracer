@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django_redis import get_redis_connection
 from django.conf import settings
 # Create your views here.
-from users.forms import RegisterForm
+from users.forms import RegisterForm, LoginSmsForm
 from utils import tencent, encrypt
 from .models import Register
 
@@ -26,6 +26,7 @@ def send_sms(request):
         if not tpl:
             return JsonResponse({'status': 216601, 'errmsg': '没有对应模板'})
         template_id = settings.SMS_TEMPLATE_ID.get(tpl)
+
         if not phone_number:
             return JsonResponse({'status': 217601, 'errmsg': '手机号不能为空', 'key': 'phone_number'})
         if not re.match(r'^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$', phone_number):
@@ -94,3 +95,9 @@ def submit_handler(request):
         print(username, email, password, confirm_password, phone_number, code)
         Register.objects.create(username=username, email=email, password=encrypt_password, phone_number=phone_number)
         return JsonResponse({'status': 200000, 'errmsg': '发送成功'})
+
+
+def login_sms(request):
+    if request.method == 'GET':
+        form = LoginSmsForm()
+        return render(request, 'users/login_sms.html', {'form': form})

@@ -1,0 +1,49 @@
+{% extends 'user_base.html' %}
+{% load static %}
+{% block titleBlock %}
+    短信登录
+{% endblock %}
+
+{% block contentBlock %}
+    <div class="account">
+        <div class="title">短信登录</div>
+        <form method="post">
+            {% csrf_token %}
+            {% for fields in form %}
+                {% if fields.name == 'code' %}
+                    <div class="form-group">
+                        <label for="{{ fields.id_for_label }}">
+                            {{ fields.label }}
+                        </label>
+                        <div class="clearfix">
+                            <div class="col-md-6" style="padding: 0;">
+                                {{ fields }}
+                                <span class="err-msg"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="button" class="btn btn-default" id="btnSms" value="点击获取验证码" />
+                            </div>
+                        </div>
+
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label for="{{ fields.id_for_label }}">{{ fields.label }}</label>
+                        {{ fields }}
+                        <span class="err-msg"></span>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+            <div class="row">
+                <div class="col-xs-3">
+                    <input type="button" id="submit" class="btn btn-primary" value="登  录">
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
+
+{% block jsBlock %}
+{% endblock %}

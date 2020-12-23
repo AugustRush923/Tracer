@@ -85,7 +85,10 @@ def submit_handler(request):
         code = request.POST.get('code')
         # 验证验证码
         conn = get_redis_connection()
-        real_code = conn.get(phone_number).decode('utf-8')
+        try:
+            real_code = conn.get(phone_number).decode('utf-8')
+        except AttributeError:
+            return JsonResponse({'status': 2116601, 'errmsg': '验证码失效或未发送，请重新发送', 'key': 'code'})
         if not real_code:
             return JsonResponse({'status': 2116601, 'errmsg': '验证码失效或未发送，请重新发送', 'key': 'code'})
 
@@ -96,10 +99,30 @@ def submit_handler(request):
         # 存入数据库
         print(username, email, password, confirm_password, phone_number, code)
         Register.objects.create(username=username, email=email, password=encrypt_password, phone_number=phone_number)
-        return JsonResponse({'status': 200000, 'errmsg': '发送成功'})
+        return JsonResponse({'status': 200000, 'errmsg': '注册成功'})
 
 
 def login_sms(request):
     if request.method == 'GET':
         form = LoginSmsForm()
         return render(request, 'users/login_sms.html', {'form': form})
+
+
+def login_sms_handler(request):
+    if request.method == 'POST':
+        phone_number = request.POST.get('phone_number')
+        if not re.match(r'^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$', phone_number):
+            # 手机不合法
+            return JsonResponse({'status': 217601, 'errmsg': '手机号格式不正确', 'key': 'phone_number'})
+        code = request.POST.get('code')
+        conn = get_redis_connection()
+        try:
+            real_code = conn.get(phone_number).decode('utf-8')
+        except AttributeError:
+            return JsonResponse({'status': 2116601, 'errmsg': '验证码失效或未发送，请重新发送', 'key': 'code'})
+        if not real_code:
+            return JsonResponse({'status': 2116601, 'errmsg': '验证码失效或未发送，请重新发送', 'key': 'code'})
+        if code != real_code:
+            return JsonResponse({'status': 10001, 'errmsg': '验证码不匹配', 'key': 'code'})
+        print('登录成功')
+        return JsonResponse({'status': 200000, 'errmsg': '登录成功'})

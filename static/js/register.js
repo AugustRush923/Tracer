@@ -4,7 +4,7 @@ btnSms.onclick = function () {
     $(".err-msg").empty()
 
     $.ajax({
-        url: 'send_sms/',
+        url: '/user/send_sms/',
         type: 'POST',
         dataType: 'json',
         data: {'tpl': 'register', 'phone_number': phone_number.value}

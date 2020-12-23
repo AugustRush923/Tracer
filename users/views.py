@@ -22,20 +22,22 @@ def send_sms(request):
         phone_number = request.POST.get('phone_number')
 
         if not all([tpl, phone_number]):
-            return JsonResponse({'status': 500202, 'errmsg': '参数不全'})
+            return JsonResponse({'status': 500202, 'errmsg': '手机号不能为空', 'key': 'phone_number'})
         if not tpl:
             return JsonResponse({'status': 216601, 'errmsg': '没有对应模板'})
         template_id = settings.SMS_TEMPLATE_ID.get(tpl)
 
-        if not phone_number:
-            return JsonResponse({'status': 217601, 'errmsg': '手机号不能为空', 'key': 'phone_number'})
         if not re.match(r'^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$', phone_number):
             # 手机不合法
             return JsonResponse({'status': 217601, 'errmsg': '手机号格式不正确', 'key': 'phone_number'})
 
         exists = Register.objects.filter(phone_number=phone_number).exists()
-        if exists:
-            return JsonResponse({'status': 221111, 'errmsg': '手机号已注册', 'key': 'phone_number'})
+        if tpl == 'register':
+            if exists:
+                return JsonResponse({'status': 221111, 'errmsg': '手机号已注册', 'key': 'phone_number'})
+        else:
+            if not exists:
+                return JsonResponse({'status': 221111, 'errmsg': '手机号未注册', 'key': 'phone_number'})
 
         sms_code = random.randrange(10000, 99999)
         conn = get_redis_connection()

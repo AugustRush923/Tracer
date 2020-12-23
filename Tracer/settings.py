@@ -131,8 +131,8 @@ SMS_APP_KEY = ''
 SMS_SIGN = "生活中的小确幸"
 
 SMS_TEMPLATE_ID = {
-    'login': '815242',
-    'register': '815238'
+    'login': '815238',
+    'register': '821515'
 }
 
 try:

@@ -9,4 +9,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('login/sms/', login_sms, name='login_sms'),
     path('login/sms/handler/', login_sms_handler, name='login_sms_handler'),
+    path('image_codes/<uuid:image_code_id>/', image_code, name='image_code'),
 ]

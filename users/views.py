@@ -1,12 +1,13 @@
 import re
 import random
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django_redis import get_redis_connection
 from django.conf import settings
 # Create your views here.
 from users.forms import RegisterForm, LoginSmsForm, LoginForm
 from utils import tencent, encrypt
+from utils.captcha.captcha import captcha
 from .models import Register
 
 
@@ -106,8 +107,8 @@ def login(request):
     if request.method == 'GET':
         form = LoginForm()
         return render(request, 'users/login.html', {'form': form})
-    # if request.method == 'POST':
-    #     pass
+    if request.method == 'POST':
+        pass
 
 
 def login_sms(request):
@@ -135,3 +136,12 @@ def login_sms_handler(request):
         print('登录成功')
         # return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
         return redirect('/index/')
+
+
+def image_code(request, image_code_id):
+    if request.method == 'GET':
+        text, image = captcha.generate_captcha()
+        print(text)
+        redis_conn = get_redis_connection('verify_codes')
+        redis_conn.setex("img_%s" % image_code_id, 180, text)
+        return HttpResponse(image, content_type="images/jpg")

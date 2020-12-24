@@ -21,7 +21,7 @@
                                 <span class="err-msg"></span>
                             </div>
                             <div class="col-md-6">
-                                <input type="button" class="btn btn-default" id="btnSms" value="点击获取验证码" />
+                                <img src="" alt="点击刷新图片" title="点击刷新图片" id="image_code" style="width: 100%">
                             </div>
                         </div>
 
@@ -35,14 +35,14 @@
                 {% endif %}
 
             {% endfor %}
-             <div>
+            <div>
                 <div style="float: right;">
                     <a href="{% url 'users:login_sms' %}">手机验证码登录?</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-3">
-                    <input type="submit" id="submit" class="btn btn-primary" value="登  录">
+                    <input type="submit" id="login" class="btn btn-primary" value="登  录">
                 </div>
             </div>
 
@@ -51,5 +51,38 @@
 {% endblock %}
 
 {% block jsBlock %}
-    <script type="text/javascript" src="{% static "js/login.js"%}"></script>
+    {#    <script type="text/javascript" src="{% static "js/login.js" %}"></script>#}
+    <script>
+        var imagecodeBtn = document.getElementById('image_code')
+
+        function generate_image_code() {
+            // 生成一个编号
+            // 严格一点的使用uuid保证编号唯一， 不是很严谨的情况下，也可以使用时间戳
+            var image_code_id = generate_uuid();
+
+            // 设置页面中图片验证码img标签的src属性
+            var image_code_url = "/user/image_codes/" + image_code_id + "/";
+            var img = document.getElementById('image_code');
+            img.src = image_code_url;
+        }
+
+        function generate_uuid() {
+            var d = new Date().getTime();
+            if (window.performance && typeof window.performance.now === "function") {
+                d += performance.now(); //use high-precision timer if available
+            }
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            return uuid;
+        }
+
+        generate_image_code();
+        imagecodeBtn.onclick = function (){
+            generate_image_code()
+        }
+
+    </script>
 {% endblock %}

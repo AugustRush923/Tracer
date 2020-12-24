@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django_redis import get_redis_connection
 from django.conf import settings
 # Create your views here.
-from users.forms import RegisterForm, LoginSmsForm
+from users.forms import RegisterForm, LoginSmsForm, LoginForm
 from utils import tencent, encrypt
 from .models import Register
 
@@ -99,7 +99,15 @@ def submit_handler(request):
         # 存入数据库
         print(username, email, password, confirm_password, phone_number, code)
         Register.objects.create(username=username, email=email, password=encrypt_password, phone_number=phone_number)
-        return JsonResponse({'status': 200000, 'errmsg': '注册成功'})
+        return redirect('/index/')
+
+
+def login(request):
+    if request.method == 'GET':
+        form = LoginForm()
+        return render(request, 'users/login.html', {'form': form})
+    # if request.method == 'POST':
+    #     pass
 
 
 def login_sms(request):
@@ -125,4 +133,5 @@ def login_sms_handler(request):
         if code != real_code:
             return JsonResponse({'status': 10001, 'errmsg': '验证码不匹配', 'key': 'code'})
         print('登录成功')
-        return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
+        # return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
+        return redirect('/index/')

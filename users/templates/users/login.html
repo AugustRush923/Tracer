@@ -1,13 +1,13 @@
 {% extends 'user_base.html' %}
 {% load static %}
 {% block titleBlock %}
-    短信登录
+    账号登录
 {% endblock %}
 
 {% block contentBlock %}
     <div class="account">
-        <div class="title">短信登录</div>
-        <form method="post">
+        <div class="title">账号登录</div>
+        <form method="post" action="{% url 'users:login' %}">
             {% csrf_token %}
             {% for fields in form %}
                 {% if fields.name == 'code' %}
@@ -37,12 +37,12 @@
             {% endfor %}
              <div>
                 <div style="float: right;">
-                    <a href="{% url 'users:login' %}">用户名密码登录?</a>
+                    <a href="{% url 'users:login_sms' %}">手机验证码登录?</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-3">
-                    <input type="button" id="submit" class="btn btn-primary" value="登  录">
+                    <input type="submit" id="submit" class="btn btn-primary" value="登  录">
                 </div>
             </div>
 

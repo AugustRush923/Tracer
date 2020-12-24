@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sms_test',
     'users',
+    'home',
 ]
 
 MIDDLEWARE = [

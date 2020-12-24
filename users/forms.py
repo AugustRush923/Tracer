@@ -18,7 +18,7 @@ class RegisterForm(BootstrapForm, forms.ModelForm):
     confirm_password = forms.CharField(
         widget=forms.PasswordInput(),
         label='确认密码')
-    code = forms.CharField(label='验证码', widget=forms.TextInput())
+    code = forms.CharField(label='短信验证码', widget=forms.TextInput())
 
     class Meta:
         model = models.Register
@@ -28,4 +28,10 @@ class RegisterForm(BootstrapForm, forms.ModelForm):
 class LoginSmsForm(BootstrapForm, forms.Form):
     phone_number = forms.CharField(max_length=11, label='手机号',
                                    validators=[RegexValidator(r'^1([3|4|5|6|7|8|9])\d{9}$', '手机号格式错误')], )
+    code = forms.CharField(label='短信验证码', widget=forms.TextInput())
+
+
+class LoginForm(BootstrapForm, forms.Form):
+    username = forms.CharField(label='用户名或邮箱')
+    password = forms.CharField(widget=forms.PasswordInput(), label='密码')
     code = forms.CharField(label='验证码', widget=forms.TextInput())

@@ -4,6 +4,8 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django_redis import get_redis_connection
 from django.conf import settings
+from django.db.models import Q
+
 # Create your views here.
 from users.forms import RegisterForm, LoginSmsForm, LoginForm
 from utils import tencent, encrypt
@@ -108,7 +110,24 @@ def login(request):
         form = LoginForm()
         return render(request, 'users/login.html', {'form': form})
     if request.method == 'POST':
-        pass
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        code = request.POST.get('code')
+        if not all([username, password, code]):
+            return JsonResponse({'status': 500202, 'errmsg': '数据不全'})
+        password = encrypt.md5_encrypt(password)
+        if re.match(r'^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$', username):
+            # 手机号登录
+            user = Register.objects.filter(Q(email=username) | Q(password=password)).first()
+        elif re.match(r'^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$', username):
+            # 邮箱登录
+            user = Register.objects.filter(Q(phone_number=username) | Q(password=password)).first()
+        # 账户登录
+        else:
+            user = Register.objects.filter(Q(username=username) | Q(password=password)).first()
+        print("登录成功！")
+        request.session['user'] = user
+        return redirect('/index')
 
 
 def login_sms(request):

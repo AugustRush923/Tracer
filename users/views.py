@@ -1,5 +1,7 @@
 import re
+import uuid
 import random
+import datetime
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, reverse
 from django_redis import get_redis_connection
@@ -10,7 +12,7 @@ from django.db.models import Q
 from users.forms import RegisterForm, LoginSmsForm, LoginForm
 from utils import tencent, encrypt
 from utils.captcha.captcha import captcha
-from .models import Register
+from .models import Register, Transaction, PriceStrategy
 
 
 def register(request):

@@ -10,6 +10,13 @@ django.setup()
 
 
 if __name__ == '__main__':
-    from users.models import Register
+    from users.models import PriceStrategy
 
-    Register.objects.create(username='abc', password='12345678', email='abc@gmail.com', phone_number='13211112221')
+    PriceStrategy.objects.create(
+        title='个人免费版',
+        price=0,
+        project_num=3,
+        project_member=2,
+        project_space=50,
+        single_file=5,
+    )

@@ -129,6 +129,10 @@ def login(request):
         code = request.POST.get('code')
         if not all([username, password, code]):
             return JsonResponse({'status': 500202, 'errmsg': '数据不全'})
+        conn = get_redis_connection(alias='verify_codes')
+        real_code = conn.get('img').decode('utf-8')
+        if code.upper != real_code:
+            return JsonResponse({'status': 10001, 'errmsg': '验证码不匹配', 'key': 'code'})
         password = encrypt.md5_encrypt(password)
         if re.match(r'^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$', username):
             # 手机号登录
@@ -139,8 +143,11 @@ def login(request):
         # 账户登录
         else:
             user = Register.objects.filter(Q(username=username) | Q(password=password)).first()
+        if not user:
+            return JsonResponse({'status': 10002, 'errmsg': '当前账户不存在', 'key': 'phone_number'})
         print("登录成功！")
-        # request.session['user'] = user
+        request.session['user_id'] = user.id
+        # return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
         return redirect(reverse('home:index'))
 
 
@@ -166,9 +173,13 @@ def login_sms_handler(request):
             return JsonResponse({'status': 2116601, 'errmsg': '验证码失效或未发送，请重新发送', 'key': 'code'})
         if code != real_code:
             return JsonResponse({'status': 10001, 'errmsg': '验证码不匹配', 'key': 'code'})
+        user = Register.objects.filter(phone_number=phone_number).first()
+        if not user:
+            return JsonResponse({'status': 10002, 'errmsg': '当前账户不存在', 'key': 'phone_number'})
         print('登录成功')
-        # return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
-        return redirect(reverse('home:index'))
+        request.session['user.id'] = user.id
+        return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
+        # return redirect(reverse('home:index'))
 
 
 def image_code(request, image_code_id):
@@ -176,5 +187,6 @@ def image_code(request, image_code_id):
         text, image = captcha.generate_captcha()
         print(text)
         redis_conn = get_redis_connection('verify_codes')
-        redis_conn.setex("img_%s" % image_code_id, 180, text)
+        # redis_conn.setex("img_%s" % image_code_id, 180, text)
+        redis_conn.setex("img", 180, text)
         return HttpResponse(image, content_type="images/jpg")

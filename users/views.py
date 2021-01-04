@@ -103,7 +103,19 @@ def submit_handler(request):
 
         # 存入数据库
         print(username, email, password, confirm_password, phone_number, code)
-        Register.objects.create(username=username, email=email, password=encrypt_password, phone_number=phone_number)
+        user = Register.objects.create(username=username, email=email, password=encrypt_password,
+                                       phone_number=phone_number)
+        # 创建交易记录
+        price_strategy = PriceStrategy.objects.filter(category=0).first()
+        Transaction.objects.create(
+            status=1,
+            order=str(uuid.uuid4()),
+            user=user,
+            price_strategy=price_strategy,
+            count=0,
+            price=0,
+            start_time=datetime.datetime.now(),
+        )
         return redirect('/index/')
 
 

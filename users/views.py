@@ -1,7 +1,7 @@
 import re
 import random
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django_redis import get_redis_connection
 from django.conf import settings
 from django.db.models import Q
@@ -126,8 +126,8 @@ def login(request):
         else:
             user = Register.objects.filter(Q(username=username) | Q(password=password)).first()
         print("登录成功！")
-        request.session['user'] = user
-        return redirect('/index')
+        # request.session['user'] = user
+        return redirect(reverse('home:index'))
 
 
 def login_sms(request):
@@ -154,7 +154,7 @@ def login_sms_handler(request):
             return JsonResponse({'status': 10001, 'errmsg': '验证码不匹配', 'key': 'code'})
         print('登录成功')
         # return JsonResponse({'status': 200000, 'errmsg': '登录成功'})
-        return redirect('/index/')
+        return redirect(reverse('home:index'))
 
 
 def image_code(request, image_code_id):
